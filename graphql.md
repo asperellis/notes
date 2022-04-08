@@ -65,3 +65,44 @@ Encapsulates HTTP logic used to interact with a GraphQL API.
 ### Cache
 - if you perform a mutation that updates or creates a single node then apollo will update automatically given they have the same id
 - if you update a node in a list or removes a node then you are responsible for updating
+  - you can refetch queries
+  - you can utilize the update method on a mutation - standard approach
+  - you can watch queries
+
+#### Updating the cache with update method
+- arguments: cache and the returned mutation data
+- read any query you want to update via cache.readQuery
+- write with new data via cache.writeQuery
+- ensure the query names or their aliases are used when updating
+
+```js
+{
+  update(cache, {data: { newTodo }}) {
+    // read existing query you want to update
+    const { todos } = cache.readQuery({ query: GET_TODOS })
+
+    // update query in the cache
+    cache.writeQuery({
+      query: GET_TODOS
+      data: { todos: todos.concat([newTodo]) }
+    })
+  }
+}
+```
+
+### Optimistic UI
+- optimisticResponse option on mutation allows you to pass what the object will ideally look like plus some extra things
+- you will have to remove this from the cache on error!
+
+```js
+optimisticResponse: {
+  __typename: 'Mutation',
+  addPet: {
+    id: 'placeholderId',
+    // any data you want/can put here for placeholding that matches the schema
+    __typename: 'Pet'
+  }
+}
+```
+
+### Directives and Fragments
