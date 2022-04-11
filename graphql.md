@@ -106,3 +106,47 @@ optimisticResponse: {
 ```
 
 ### Directives and Fragments
+
+### Client Side Schemas
+- Apollo client can also manage state in your app which allows you to define a schema for that state.
+- This allows you to mix and match server and client queries together if you want.
+- You just have to extend the types from the server schema and use directives to access local state
+- To add client side state you need two things: add type definitions and resolvers and then pass to the client via `typeDefs` and `resolvers` options
+- typeDefs: the types on the client side. can extend server types
+- resolvers: the resolvers for the client side state. based on types/fields defined
+
+#### Directives
+Syntax to indicate to the server 
+
+some examples of client side directives
+@client - indicates field/type is stored in client state
+@skip/include - skip or include field based on condition
+@defer
+@live
+
+server side directives
+@deprecated - deprecate a field
+
+#### Fragments
+Pieces of GraphQL code that can be reused
+
+```js
+// creating fragment on a specific type
+const FRAGMENT_EXAMPLE = gql`
+  fragment FragmentExample on Type {
+    // Type fields here
+  }
+`
+
+// using fragments
+query AllCharacters($page: Int) {
+  // query is in here
+  characters(page: $page) {
+    results: {
+      ...FragmentExample
+    }
+  }
+}
+// adds
+${FRAGMENT_EXAMPLE}
+```
