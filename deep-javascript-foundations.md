@@ -191,3 +191,107 @@ js is lexically scoped - variables can only be referenced from the scope it was 
     * better debugging the stack trace
     * more self documenting code
     * named function declaration > named function expression > anon arrow function
+
+### Lexical and Dynamic Scope
+
+#### Lexical Scope
+* Related to the compiler, decided at compile time not run-time.
+* Fixed at author time, unchangeable
+* Vast majority of languages are lexically scoped
+
+#### Dynamic Scope
+* Dynamic conditions can affect scoping
+* Scoped based on conditions at run-time
+* does not exist in JS but JS has a mechanism that gives us this level of flexibility
+* resolves based on where a func was called from
+
+### Function Scoping
+* Scoping done by functions
+* Should expose the least amount of variables/details as possible
+    * to prevent naming collisions
+    * to prevent misuse by hiding
+    * to prevent issues when re-factoring
+
+#### IIFE
+* Immediately invoked function expression - using func expression to create a scope and immediately evoking it
+* Scope goes away once executed
+* Can be anonymous
+```js
+    // function declaration
+    function myFunctionDeclaration() {}
+
+    // IIFE
+    (function myIIFE() {
+        // scope created and removed after execution
+    })()
+```
+
+### Block Scoping
+* Scoping done in blocks {}
+* let and const are so you can make a declaration inside a block
+* blocks are not scopes until let and consts are inside them, then it implicitly makes them a scope, not all {} are scopes
+* can use to re-enforce something to the reader (e.g. a variable used as a temp placeholder for a value)
+* use an explicit let block to open up a scope for the lines needed
+* const = variable that cant be reassigned
+* let = block scoped var
+```js
+    var teacher = 'Alex'
+
+    // IIFE
+    (function myIIFE(teacher) {
+        // scope created and removed after execution
+        console.log(teacher)
+    })('Suzy')
+
+    // block
+    {
+        let teacher = 'Suzy'
+        console.log(teacher)
+    }
+```
+
+### Hoisting
+* JS engine does not hoist. This is an english language convention we've made up to discuss lexical scope. It doesn't actually hoist/change code to have vars at the top.
+* Function hoisting - can access functions before they are defined ifa function declaration
+* Var hoisting - consider undefined if accessed before declaration
+* lets and const hoist but differently: specific to a block. when hoisting it doesn't get initialized in scope like var does (not undefined so can't touch)
+
+## Closure
+* Closure is when a function "remembers" its lexical scope even when the function is executed outside that lexical scope
+
+### Module Pattern
+* requires concept of encapsulation (or hiding data and behavior)
+* modules do encapsulation via closure
+
+```js
+// Classic, revealing module pattern - IIFE
+var workshop = (function Module(teacher) {
+    const ask = (question) => console.log(teacher, question)
+    return { ask } // publicly exposed module stuff, workshop.teacher is inaccessible
+})('Alex');
+
+workshop.ask('this is a question') // Alex this is a question
+
+// Module Factory
+function WorkshopFactory(teacher) {
+    const ask = (question) => console.log(teacher, question)
+    return { ask } // publicly exposed module stuff, workshop.teacher is inaccessible
+};
+
+const workshop = WorkshopModule('Alex')
+workshop.ask('this is a question') // Alex this is a question
+
+// ES6 Modules - assumes eveything is private
+// to make something public, use the export key
+// file based modules with .mjs extension
+const teacher = 'Alex'
+export default function ask(question) {
+    console.log(teacher, question)
+}
+
+// to import 
+// named import 
+import ask from 'workshop'
+// namespaced import - gets the whole namespace
+import * as workshop from 'workshop'
+```
